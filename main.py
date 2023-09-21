@@ -1,7 +1,6 @@
 """
     Transmitter is located in r = [rx, ry, rz] and moving with velocity v = [vx, vy, vz]. It emits signal with frequency f. 
-    n Recievers are given. They are located at positions r0, r1, ..., rn and move with velocities v0, v1, ..., vn. Recievers must accept signal when it reaches them 
-    and remember frequency with wich they have a signal.
+    n Recievers are located at positions r0, r1, ..., rn and move with velocities v0, v1, ..., vn.
 """
 
 import random
