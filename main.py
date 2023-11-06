@@ -12,6 +12,30 @@ from Configs import Configs
 from DataHandler import DataHandler
 
 
+def simulate(transmitter, receivers, data_handler):
+    # Simulate the Doppler effect
+    for _ in tqdm(range(configs.num_iterations)):
+        signal = transmitter.send_signal()
+
+        for receiver in receivers:
+            receiver.observe_signal(signal, transmitter)
+
+        transmitter.update()
+        for receiver in receivers:
+            receiver.update()
+        data_handler.update()
+
+    data_handler.save() # Save to file
+
+def plot_frequencies(receivers):
+    plt.figure()
+    for i, receiver in enumerate(receivers):
+        plt.plot(receiver.observed_frequencies, label=f"Receiver {i+1}")
+    plt.xlabel("Time (sec)")
+    plt.ylabel("Observed Frequency (Hz)")
+    plt.legend()
+    plt.title("Doppler Effect Simulation")
+    plt.show()
 
 if __name__ == '__main__':
     # Set up Configs
@@ -42,28 +66,12 @@ if __name__ == '__main__':
         Receiver(position, velocity)
         for position, velocity in zip(receiver_positions, receiver_velocities)
     ]
+
+    # Init data handler
     data_handler = DataHandler(transmitter, receivers, configs)
 
-    # Simulate the Doppler effect
-    for _ in tqdm(range(configs.num_iterations)):
-        signal = transmitter.send_signal()
-
-        for receiver in receivers:
-            receiver.observe_signal(signal, transmitter)
-
-        transmitter.update()
-        for receiver in receivers:
-            receiver.update()
-        data_handler.update()
-
-    data_handler.save() # Save to file
+    # Simulate
+    simulate(transmitter, receivers, data_handler)
 
     # Plot observed frequencies
-    plt.figure()
-    for i, receiver in enumerate(receivers):
-        plt.plot(receiver.observed_frequencies, label=f"Receiver {i+1}")
-    plt.xlabel("Time (sec)")
-    plt.ylabel("Observed Frequency (Hz)")
-    plt.legend()
-    plt.title("Doppler Effect Simulation")
-    plt.show()
+    plot_frequencies(receivers)

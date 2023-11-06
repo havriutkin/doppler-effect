@@ -35,3 +35,9 @@ class DataHandler:
     def save(self) -> None:
         with open(self.configs.file_path, "w") as json_file:
             json.dump(self.data, json_file)
+
+    def read_parameters(self) -> None:
+        parameters = []
+        with open(self.configs.file_path, "r") as json_file: 
+            pass
+
