@@ -69,9 +69,12 @@ if __name__ == '__main__':
 
     # Init data handler
     data_handler = DataHandler(transmitter, receivers, configs)
+    parameters = data_handler.read_parameters()
+    print(len(parameters[0]))
 
     # Simulate
-    simulate(transmitter, receivers, data_handler)
+    #simulate(transmitter, receivers, data_handler)
 
     # Plot observed frequencies
-    plot_frequencies(receivers)
+    #plot_frequencies(receivers)
+

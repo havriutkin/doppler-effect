@@ -1,2 +1,2 @@
-def random_pick(number: int, min_distance: float):
+def random_pick(parameters, number: int, min_distance: float):
     pass
