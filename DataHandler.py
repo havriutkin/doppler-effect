@@ -76,6 +76,6 @@ class DataHandler:
                 for j in range(self.configs.number_of_recievers):
                     parameter.append(recievers_data[f"f"][j])
 
-                parameters.append(parameter)
+                parameters.append(np.array(parameter))
 
         return parameters
