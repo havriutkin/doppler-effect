@@ -1,16 +1,11 @@
-
-import random
 import numpy as np
-from matplotlib import pyplot as plt
-from tqdm import tqdm
-from Doppler import Transmitter, Receiver
 from Configs import Configs
 from DataHandler import DataHandler
 
-from sklearn.decomposition import PCA
 from scipy.spatial.distance import cdist
 
 def most_neighbours_pick(parameters, number, radius):
+    """ Returns points that have the most neighboors in given radius and their indices """
     # Calculate pairwise Euclidean distances between vectors
     distances = cdist(parameters, parameters, 'euclidean')
 
@@ -61,6 +56,12 @@ def most_neighbours_pick(parameters, number, radius):
 
     return selected_vectors, selected_indices
 
+def classify(parameter, anchor_points):
+    """ Returns best anchor point for given parameter by checking euclidean distance """
+    distances = cdist([parameter], anchor_points, 'euclidean')
+    min_index = np.argmin(distances)
+    return anchor_points[min_index]
+
 if __name__ == '__main__':
     configs = Configs()
 
@@ -68,3 +69,7 @@ if __name__ == '__main__':
 
     parameters = data_handler.read_parameters()
     anchor_points, anchor_indices = most_neighbours_pick(parameters, 10, 100)
+
+    problem = parameters[84]    # Pick random parameter as a problem
+    anchor_point = classify(problem, anchor_points)
+    print(anchor_point)
