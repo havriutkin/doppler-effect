@@ -80,14 +80,15 @@ def construct_macaulay_system(json_parameter, configs: Configs):
     r = json_parameter["r"]
     v = json_parameter["v"]
     f = json_parameter["f"]
+    c = configs.signal_speed
 
     for j in range(configs.number_of_recievers):
-        xSq = f"({r[j][0]} - r#0) * ({r[j][0]} - r#0)"
-        ySq = f"({r[j][1]} - r#1) * ({r[j][1]} - r#1)"
-        zSq = f"({r[j][2]} - r#2) * ({r[j][2]} - r#2)"
+        xSq = f"({r[j][0]} - rx) * ({r[j][0]} - rx)"
+        ySq = f"({r[j][1]} - ry) * ({r[j][1]} - ry)"
+        zSq = f"({r[j][2]} - rz) * ({r[j][2]} - rz)"
         pSq = f"{xSq} + {ySq} + {zSq}"
-        lhs = f"({pSq}) * c * c * (f - {f[j]}) * (f - {f[j]})"
-        rhs = f"({r[j][0]} - r#0)*({v[j][0]} - v#0) + ({r[j][1]} - r#1)*({v[j][1]} - v#1) + ({r[j][2]} - r#2)*({v[j][2]} - v#2)"
+        lhs = f"({pSq}) * {c} * {c} * (f - {f[j]}) * (f - {f[j]})"
+        rhs = f"({r[j][0]} - rx)*({v[j][0]} - vx) + ({r[j][1]} - ry)*({v[j][1]} - vy) + ({r[j][2]} - rz)*({v[j][2]} - vz)"
         rhs = f"f * ({rhs}) * ({rhs})"
         equation = f"({lhs}) - ({rhs})"
         result.append(equation)
@@ -110,6 +111,22 @@ if __name__ == '__main__':
     anchor_system = construct_macaulay_system(data_handler.parameter_to_json(anchor_point), configs)
     anchor_solution = data_handler.get_solution(anchor_index)
 
+    with open('./problemSystem', 'w') as file:
+        data = str(problem_system).replace("'", "")
+        data = data.replace("[", "{")
+        data = data.replace("]", "}")
+        file.write(data)
     
+    with open('./anchorSystem', 'w') as file:
+        data = str(anchor_system).replace("'", "")
+        data = data.replace("[", "{")
+        data = data.replace("]", "}")
+        file.write(data)
 
-    print(anchor_solution)
+    with open('./anchorSolution', 'w') as file:
+        data = str(anchor_solution)
+        data = data.replace("[", "{")
+        data = data.replace("]", "}")
+        file.write(data)
+
+    print("Done")

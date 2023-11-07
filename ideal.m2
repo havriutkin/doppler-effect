@@ -1,5 +1,5 @@
 loadPackage "NumericalAlgebraicGeometry";
-R = ZZ/911[f, rx, ry, rz, vx, vy, vz]
+R = CC[f, rx, ry, rz, vx, vy, vz]
 c = random(0, 10);
 
 -- Function takes number of recievers and generates random parameters
