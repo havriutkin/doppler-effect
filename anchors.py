@@ -56,11 +56,44 @@ def most_neighbours_pick(parameters, number, radius):
 
     return selected_vectors, selected_indices
 
-def classify(parameter, anchor_points):
+def classify(parameter, anchor_points, anchor_indices):
     """ Returns best anchor point for given parameter by checking euclidean distance """
     distances = cdist([parameter], anchor_points, 'euclidean')
     min_index = np.argmin(distances)
-    return anchor_points[min_index]
+    return anchor_points[min_index],  anchor_indices[min_index]
+
+
+"""
+    xSq := (ri#j#0 - r#0) * (ri#j#0 - r#0);
+    ySq := (ri#j#1 - r#1) * (ri#j#1 - r#1);
+    zSq := (ri#j#2 - r#2) * (ri#j#2 - r#2);  
+    pSq := xSq + ySq + zSq;
+    lhs := pSq * c * c * (f - fi#j) * (f - fi#j);
+    rhs := (ri#j#0 - r#0)*(vi#j#0 - v#0) + (ri#j#1 - r#1)*(vi#j#1 - v#1) + (ri#j#2 - r#2)*(vi#j#2 - v#2);
+    rhs = f * rhs * rhs;
+    equation := lhs - rhs;
+"""
+def construct_macaulay_system(json_parameter, configs: Configs):
+    """ Returns string that represents system of equations for macaulay2 """
+    result = []
+
+    r = json_parameter["r"]
+    v = json_parameter["v"]
+    f = json_parameter["f"]
+
+    for j in range(configs.number_of_recievers):
+        xSq = f"({r[j][0]} - r#0) * ({r[j][0]} - r#0)"
+        ySq = f"({r[j][1]} - r#1) * ({r[j][1]} - r#1)"
+        zSq = f"({r[j][2]} - r#2) * ({r[j][2]} - r#2)"
+        pSq = f"{xSq} + {ySq} + {zSq}"
+        lhs = f"({pSq}) * c * c * (f - {f[j]}) * (f - {f[j]})"
+        rhs = f"({r[j][0]} - r#0)*({v[j][0]} - v#0) + ({r[j][1]} - r#1)*({v[j][1]} - v#1) + ({r[j][2]} - r#2)*({v[j][2]} - v#2)"
+        rhs = f"f * ({rhs}) * ({rhs})"
+        equation = f"({lhs}) - ({rhs})"
+        result.append(equation)
+
+    return result
+
 
 if __name__ == '__main__':
     configs = Configs()
@@ -71,5 +104,12 @@ if __name__ == '__main__':
     anchor_points, anchor_indices = most_neighbours_pick(parameters, 10, 100)
 
     problem = parameters[84]    # Pick random parameter as a problem
-    anchor_point = classify(problem, anchor_points)
-    print(anchor_point)
+    anchor_point, anchor_index = classify(problem, anchor_points, anchor_indices)
+    
+    problem_system = construct_macaulay_system(data_handler.parameter_to_json(problem), configs)
+    anchor_system = construct_macaulay_system(data_handler.parameter_to_json(anchor_point), configs)
+    anchor_solution = data_handler.get_solution(anchor_index)
+
+    
+
+    print(anchor_solution)

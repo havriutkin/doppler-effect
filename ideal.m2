@@ -1,5 +1,5 @@
 loadPackage "NumericalAlgebraicGeometry";
-R = ZZ/911[rx, ry, rz, vx, vy, vz]
+R = ZZ/911[f, rx, ry, rz, vx, vy, vz]
 c = random(0, 10);
 
 -- Function takes number of recievers and generates random parameters
@@ -24,7 +24,7 @@ generateRandomParameters = n -> (
 );
 
 -- Function constructs quations
-constructEquations = (f, fi, ri, vi) -> (
+constructEquations = (fi, ri, vi) -> (
     n = #fi;
     r := [rx, ry, rz];
     v := [vx, vy, vz];
@@ -34,9 +34,9 @@ constructEquations = (f, fi, ri, vi) -> (
         ySq := (ri#j#1 - r#1) * (ri#j#1 - r#1);
         zSq := (ri#j#2 - r#2) * (ri#j#2 - r#2);  
         pSq := xSq + ySq + zSq;
-        lhs := pSq * c * c * (1 - fi#j/f) * (1 - fi#j/f);
+        lhs := pSq * c * c * (f - fi#j) * (f - fi#j);
         rhs := (ri#j#0 - r#0)*(vi#j#0 - v#0) + (ri#j#1 - r#1)*(vi#j#1 - v#1) + (ri#j#2 - r#2)*(vi#j#2 - v#2);
-        rhs = rhs * rhs;
+        rhs = f * rhs * rhs;
         equation := lhs - rhs;
         myEquations = append(myEquations, equation);
     );

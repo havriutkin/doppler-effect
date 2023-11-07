@@ -46,7 +46,6 @@ class DataHandler:
         # Update recievers data
         self._update_receivers_data()
         
-
     def save(self) -> None:
         with open(self.configs.file_path, "w") as json_file:
             json.dump(self.data, json_file)
@@ -79,3 +78,49 @@ class DataHandler:
                 parameters.append(np.array(parameter))
 
         return parameters
+    
+    def parameter_to_json(self, parameter):
+        result = {
+            "r": [],
+            "v": [],
+            "f": []
+        }
+        
+        # Get positions
+        for i in range(self.configs.number_of_recievers):
+            position = [parameter[3*i], parameter[3*i + 1], parameter[3*i + 2]]
+            result["r"].append(position)
+
+        # Get velocities 
+        for i in range(self.configs.number_of_recievers):
+            velocity = [parameter[21 + 3*i], parameter[21 + (3*i + 1)], parameter[21 + (3*i + 2)]]
+            result["v"].append(velocity)
+
+        # Get frequencies
+        for i in range(self.configs.number_of_recievers):
+            result["f"].append(parameter[42 + i])
+
+        return result
+
+    def get_solution(self, index):
+        """ Obtain solution that corresponds to problem with given index """
+        """ Order of parameters is important! """
+        result = []
+        with open(self.configs.file_path, "r") as json_file: 
+            data = json.load(json_file)
+            transmitter_slice = data["transmitter"][index]
+
+            # Get frequency
+            result.append(transmitter_slice["tf"])
+
+            # Get position
+            for element in transmitter_slice["tr"]:
+                result.append(element)
+
+            # Get velocities
+            for element in transmitter_slice["tv"]:
+                result.append(element)
+        
+        return result
+            
+
