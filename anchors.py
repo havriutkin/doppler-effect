@@ -101,7 +101,7 @@ if __name__ == '__main__':
     data_handler = DataHandler(None, None, configs)
 
     parameters = data_handler.read_parameters()
-    anchor_points, anchor_indices = most_neighbours_pick(parameters, 10, 100)
+    anchor_points, anchor_indices = most_neighbours_pick_minkowski(parameters, 10, 100)
 
     problem = parameters[84]    # Pick random parameter as a problem
     anchor_point, anchor_index = classify(problem, anchor_points, anchor_indices)
