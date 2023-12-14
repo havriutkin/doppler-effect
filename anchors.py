@@ -4,10 +4,10 @@ from DataHandler import DataHandler
 
 from scipy.spatial.distance import cdist
 
-def most_neighbours_pick(parameters, number, radius):
+def most_neighbours_pick_minkowski(parameters, number, radius, p=2):
     """ Returns points that have the most neighboors in given radius and their indices """
     # Calculate pairwise Euclidean distances between vectors
-    distances = cdist(parameters, parameters, 'euclidean')
+    distances = cdist(parameters, parameters, 'minkowski', p=p)
 
     # Mark all vectors as potential candidates initially
     candidates = np.ones(len(parameters), dtype=bool)
@@ -56,12 +56,11 @@ def most_neighbours_pick(parameters, number, radius):
 
     return selected_vectors, selected_indices
 
-def classify(parameter, anchor_points, anchor_indices):
+def classify(parameter, anchor_points, anchor_indices, p=2):
     """ Returns best anchor point for given parameter by checking euclidean distance """
-    distances = cdist([parameter], anchor_points, 'euclidean')
+    distances = cdist([parameter], anchor_points, 'minkowski', p=p)
     min_index = np.argmin(distances)
     return anchor_points[min_index],  anchor_indices[min_index]
-
 
 """
     xSq := (ri#j#0 - r#0) * (ri#j#0 - r#0);
